@@ -1,0 +1,4 @@
+emp_id,name,department,role,email,status
+E001,Sarah Connor,IT,SysAdmin,sarah.c@internal.co,Active
+E002,Kyle Reese,Security,Head of Security,kyle.r@internal.co,On Leave
+E003,Dr. Silberman,HR,Psychologist,doc.s@internal.co,Active

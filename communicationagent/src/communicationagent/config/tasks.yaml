@@ -1,0 +1,59 @@
+extracting:
+  description: >
+    Analyze the following input text: "{input_text}".
+    
+    You need to extract:
+    1. **The Target List:** A list of names (e.g., ['John', 'Jane']) OR a Group Flag (e.g., 'ALL_CLIENTS', 'ALL_EMPLOYEES').
+    2. The Type of person (Client vs. Employee).
+    3. The Type of Message and Tone.
+    
+    **CRITICAL:** If the user says "Send to all clients", do not invent names. Just output the flag 'ALL_CLIENTS'.
+  expected_output: >
+    A structured object containing a **List of Names (or group flag)**, Person Type, Message Type, and Tone.
+  agent: info_extracter
+
+contact_info:
+  description: >
+    Use the extracted targets from the previous task.
+    
+    1. **CASE: LIST OF NAMES** -> Iterate through the list. For every name, search the CSV and retrieve the email/phone.
+    2. **CASE: GROUP FLAG ('ALL_CLIENTS')** -> Open the Client CSV and retrieve **ALL** emails and phones.
+    3. **CASE: GROUP FLAG ('ALL_EMPLOYEES')** -> Open the Employee CSV and retrieve **ALL** emails.
+    
+    Compile a final list of all recipients found.
+  expected_output: >
+    **A List of Dictionaries**, where each item contains {Name, Email, Phone}.
+  agent: contact_info
+
+content_gen_task:
+  description: >
+    Draft the message content based on "{input_text}".
+    
+    1. If the recipient list contains only one person, address them by Name.
+    2. **If the recipient list contains multiple people**, use a generic but polite greeting (e.g., "Hello," or "Hi Team,").
+    3. Adhere to the Tone and Message Type.
+  expected_output: >
+    The final message body text ready for distribution.
+  agent: content_gen
+
+sending_output:
+  description: >
+    You have three sources of context:
+    1. **Extraction Logic** (Contains 'Message Type' -> e.g., 'WhatsApp' or 'Email').
+    2. **Contact Info** (Contains Email and Phone).
+    3. **Drafted Message** (The text to send).
+
+    **STEP 1: CHECK THE MESSAGE TYPE.**
+    Look at the output from the Extraction Logic. 
+    - If Message Type is 'WhatsApp' or 'SMS': **YOU MUST USE THE WHATSAPP TOOL.**
+    - If Message Type is 'Email': Use the Email Tool.
+
+    **STEP 2: SELECT RECIPIENT.**
+    - If using WhatsApp: Use the **Phone Number** from Contact Info.
+    - If using Email: Use the **Email Address** from Contact Info.
+    
+    **STEP 3: EXECUTE.**
+    Send the message using the correct tool. Do not fallback to email if WhatsApp is requested.
+  expected_output: >
+    A confirmation log stating EXACTLY which tool was used (e.g., "Sent via WhatsApp to +123...").
+  agent: send_output
