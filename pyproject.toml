@@ -8,5 +8,6 @@ dependencies = [
     "crewai[google-genai,tools]>=1.6.0",
     "dotenv>=0.9.9",
     "pandas>=2.3.3",
+    "psycopg2>=2.9.11",
     "twilio>=9.8.7",
 ]

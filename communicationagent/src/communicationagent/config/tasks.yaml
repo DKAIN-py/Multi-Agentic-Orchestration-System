@@ -6,7 +6,7 @@ extracting:
     1. **The Target List:** A list of names (e.g., ['John', 'Jane']) OR a Group Flag (e.g., 'ALL_CLIENTS', 'ALL_EMPLOYEES').
     2. The Type of person (Client vs. Employee).
     3. The Type of Message and Tone.
-    
+    4. The sending signal (directly or check first)
     **CRITICAL:** If the user says "Send to all clients", do not invent names. Just output the flag 'ALL_CLIENTS'.
   expected_output: >
     A structured object containing a **List of Names (or group flag)**, Person Type, Message Type, and Tone.
@@ -14,13 +14,13 @@ extracting:
 
 contact_info:
   description: >
-    Use the extracted targets from the previous task.
+    Use the extracted targets from the previous task to query the database.
     
-    1. **CASE: LIST OF NAMES** -> Iterate through the list. For every name, search the CSV and retrieve the email/phone.
-    2. **CASE: GROUP FLAG ('ALL_CLIENTS')** -> Open the Client CSV and retrieve **ALL** emails and phones.
-    3. **CASE: GROUP FLAG ('ALL_EMPLOYEES')** -> Open the Employee CSV and retrieve **ALL** emails.
+    1. **CASE: LIST OF NAMES** -> Construct a SQL query to find these specific names in the database.
+    2. **CASE: GROUP FLAG ('ALL_CLIENTS')** -> Execute a query to SELECT all records from the 'clients' table.
+    3. **CASE: GROUP FLAG ('ALL_EMPLOYEES')** -> Execute a query to SELECT all records from the 'employees' table.
     
-    Compile a final list of all recipients found.
+    Ensure you retrieve the Email and Phone columns for every match.
   expected_output: >
     **A List of Dictionaries**, where each item contains {Name, Email, Phone}.
   agent: contact_info
@@ -35,6 +35,27 @@ content_gen_task:
   expected_output: >
     The final message body text ready for distribution.
   agent: content_gen
+
+content_verifi_task:
+  description: >
+    You have the **Drafted Message** and the **Extraction Data**.
+    
+    **STEP 1: CHECK THE 'REQUIRES_REVIEW' FLAG.**
+    Look at the output from the Extraction Agent.
+    
+    **CASE A: requires_review is False (User said "Directly")**
+    - DO NOT use the tool.
+    - DO NOT ask the human.
+    - Simply return the Drafted Message exactly as it is.
+    
+    **CASE B: requires_review is True (Default)**
+    - You MUST use the 'Ask Human for Review' tool.
+    - Input the draft into the tool.
+    - If the tool output is "ok", return the draft.
+    - If the tool output contains changes, REWRITE the message and return the new version.
+  expected_output: >
+    The final approved message string.
+  agent: content_verifi
 
 sending_output:
   description: >

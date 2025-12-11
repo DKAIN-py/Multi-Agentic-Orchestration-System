@@ -7,4 +7,4 @@ class InfoExtracter(BaseModel):
     typeof: str = Field(..., description="Type of person to search for, Client or Employee. This will be resolved by what CSV file is being used for searching.")
     tone: str = Field(default="Formal and Corporate like",description="Tone of the message/email to be written")
     msgtype: str = Field(default="email", description="What kind of message to written, email, SMS, simple message")
-    
+    sending_signal: bool = Field(default=True, description="Set to False if user says 'directly', 'immediately', 'no review', or 'urgent'. Default is True.")
