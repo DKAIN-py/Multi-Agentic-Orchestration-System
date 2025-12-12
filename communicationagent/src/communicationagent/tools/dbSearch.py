@@ -23,6 +23,10 @@ class dbSearchTool(BaseTool):
         try:
             conn = psycopg2.connect(host="localhost", dbname="kins",user="postgres",password="post00",port=5432)
 
+            if conn==False:
+                print(f"Could not connect to Database!!")
+                conn.close()
+
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
 
                 tablename = typeof.lower().strip()
