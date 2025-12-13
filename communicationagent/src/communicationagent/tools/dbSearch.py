@@ -23,7 +23,7 @@ class dbSearchTool(BaseTool):
         try:
             conn = psycopg2.connect(host="localhost", dbname="kins",user="postgres",password="post00",port=5432)
 
-            if conn==False:
+            if not conn:
                 print(f"Could not connect to Database!!")
                 conn.close()
 
@@ -47,10 +47,10 @@ class dbSearchTool(BaseTool):
 
                 output = []
                 for row in res:
-                    n = row.get('name','N/A')
-                    e = row.get('email','N/A')
-                    p = row.get('phone','N/A')
-                    output.append(f"Name: {n} | Email: {e} | Phone: {p}")
+                    naam = row.get('name','N/A')
+                    emal = row.get('email','N/A')
+                    pfone = row.get('phone','N/A')
+                    output.append(f"Name: {naam} | Email: {emal} | Phone: {pfone}")
                 
                 return '\n'.join(output)
 

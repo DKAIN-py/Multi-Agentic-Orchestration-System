@@ -1,10 +1,14 @@
 #!/usr/bin/env python
+
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 import sys
 import warnings
 
 from datetime import datetime
 
-from recruitingagent.crew import Recruitingagent
+from crew import Recruitingagent
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -17,8 +21,10 @@ def run():
     """
     Run the crew.
     """
+    custom_input = input("Enter what message u want to do: ")
+
     inputs = {
-        'topic': 'AI LLMs',
+        'job_description': custom_input,
         'current_year': str(datetime.now().year)
     }
 
@@ -27,68 +33,68 @@ def run():
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 
+run()
+# # def train():
+# #     """
+# #     Train the crew for a given number of iterations.
+# #     """
+# #     inputs = {
+# #         "topic": "AI LLMs",
+# #         'current_year': str(datetime.now().year)
+# #     }
+# #     try:
+# #         Recruitingagent().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
-def train():
-    """
-    Train the crew for a given number of iterations.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        'current_year': str(datetime.now().year)
-    }
-    try:
-        Recruitingagent().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while training the crew: {e}")
 
-    except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+# # def replay():
+# #     """
+# #     Replay the crew execution from a specific task.
+# #     """
+# #     try:
+# #         Recruitingagent().crew().replay(task_id=sys.argv[1])
 
-def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
-    try:
-        Recruitingagent().crew().replay(task_id=sys.argv[1])
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while replaying the crew: {e}")
 
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+# # def test():
+# #     """
+# #     Test the crew execution and returns the results.
+# #     """
+# #     inputs = {
+# #         "topic": "AI LLMs",
+# #         "current_year": str(datetime.now().year)
+# #     }
 
-def test():
-    """
-    Test the crew execution and returns the results.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        "current_year": str(datetime.now().year)
-    }
+# #     try:
+# #         Recruitingagent().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
 
-    try:
-        Recruitingagent().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while testing the crew: {e}")
 
-    except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+# # def run_with_trigger():
+#     """
+#     Run the crew with trigger payload.
+#     """
+#     # import json
 
-def run_with_trigger():
-    """
-    Run the crew with trigger payload.
-    """
-    import json
+#     # if len(sys.argv) < 2:
+#     #     raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
 
-    if len(sys.argv) < 2:
-        raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
+#     # try:
+#     #     trigger_payload = json.loads(sys.argv[1])
+#     # except json.JSONDecodeError:
+#     #     raise Exception("Invalid JSON payload provided as argument")
 
-    try:
-        trigger_payload = json.loads(sys.argv[1])
-    except json.JSONDecodeError:
-        raise Exception("Invalid JSON payload provided as argument")
+#     # inputs = {
+#     #     "crewai_trigger_payload": trigger_payload,
+#     #     "topic": "",
+#     #     "current_year": ""
+#     # }
 
-    inputs = {
-        "crewai_trigger_payload": trigger_payload,
-        "topic": "",
-        "current_year": ""
-    }
-
-    try:
-        result = Recruitingagent().crew().kickoff(inputs=inputs)
-        return result
-    except Exception as e:
-        raise Exception(f"An error occurred while running the crew with trigger: {e}")
+#     # try:
+#     #     result = Recruitingagent().crew().kickoff(inputs=inputs)
+#     #     return result
+#     # except Exception as e:
+#     #     raise Exception(f"An error occurred while running the crew with trigger: {e}")

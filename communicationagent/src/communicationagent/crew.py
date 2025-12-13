@@ -7,9 +7,6 @@ from tools.emailTool import SendEmailTool
 from tools.whatsappTool import SendWhatsAppTool
 from tools.reviewTool import ReviewTool
 from pyModels.extracter import InfoExtracter
-from dotenv import load_dotenv
-
-load_dotenv()
 
 dbsearch = dbSearchTool()
 sendEmail = SendEmailTool()
