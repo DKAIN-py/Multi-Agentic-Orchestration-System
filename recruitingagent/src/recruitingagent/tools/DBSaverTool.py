@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 import psycopg2
 import os
 import json
-import ast
 
 # DATABASE CONFIG
 DB_PARAMS = {

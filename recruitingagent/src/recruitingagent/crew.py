@@ -1,5 +1,4 @@
 from crewai import Agent, Crew, Process, Task, LLM
-from langchain_ollama import OllamaLLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
@@ -82,6 +81,9 @@ class Recruitingagent():
             context=[self.RecurimentExtracter_task()],
             callback=checkDBRes
         )
+
+
+
 
     @task
     def candidate_finding_task(self) -> Task:
