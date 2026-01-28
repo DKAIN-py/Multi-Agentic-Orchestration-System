@@ -1,6 +1,7 @@
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
+import os
 from typing import List
 from tools.dbSearch import dbSearchTool
 from tools.emailTool import SendEmailTool
@@ -13,6 +14,11 @@ sendEmail = SendEmailTool()
 sendwhatsapp = SendWhatsAppTool()
 reviewSignal = ReviewTool()
 
+local_llm = LLM(
+    model=os.getenv("OPENAI_MODEL_NAME"),
+    base_url=os.getenv("OPENAI_API_BASE"),
+    temperature=0.0
+)
 
 @CrewBase
 class Communicationagent():
@@ -27,7 +33,8 @@ class Communicationagent():
             config=self.agents_config['info_extracter'],
             max_rpm = 5,
             max_iter=3,
-            verbose=True
+            verbose=True,
+            llm=local_llm
         )
     
     @agent
@@ -37,7 +44,8 @@ class Communicationagent():
             tools=[dbsearch],
             max_rpm = 5,
             max_iter=3,
-            verbose=True
+            verbose=True,
+            llm=local_llm
         )
     
     @agent
@@ -46,7 +54,8 @@ class Communicationagent():
             config=self.agents_config['content_gen'],
             max_rpm = 5,
             max_iter=3,
-            verbose=True
+            verbose=True,
+            llm=local_llm
         )
     
     @agent
@@ -56,7 +65,8 @@ class Communicationagent():
             tools=[reviewSignal],
             max_rpm = 5,
             max_iter=3,
-            verbose=True
+            verbose=True,
+            llm=local_llm
         )
 
     @agent
@@ -66,7 +76,8 @@ class Communicationagent():
             tools=[sendEmail,sendwhatsapp],
             max_rpm = 5,
             max_iter=3,
-            verbose=True
+            verbose=True,
+            llm=local_llm
         )
 
 

@@ -38,3 +38,6 @@ class WebSearchTool(BaseTool):
         
         except Exception as e:
             return f"Google Search Error: {str(e)}"
+        
+def search_web(output):
+    return "THRESHOLD NOT MET" in output.raw

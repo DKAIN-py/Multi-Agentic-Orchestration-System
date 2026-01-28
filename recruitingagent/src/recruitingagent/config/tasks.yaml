@@ -1,41 +1,53 @@
 RecurimentExtracter_task:
   description: >
-    Analyze the following job description: 
-    "{job_description}"
+    PROCESS FLOW:
+    1. Input Parsing: Scan "{job_description}" for key entities.
+    2. Skill Distillation: Filter for hard-tech (e.g., "React", "Docker") and discard soft-skills.
+    3. Experience Quantization: 
+       - Junior -> 1-3 years
+       - Senior -> 5-10 years
+       - If unspecified -> Default to "Mid (3-5 years)"
+    4. Budget Calculation:
+       - If Monthly/Annual: Divide by 160 or 2000 respectively to get $/hr.
+       - If Missing: Note as "Market Rate [Seniority Level]".
+    5. Domain Inference: Analyze company context to categorize into [Fintech, Healthcare, Retail, Tech].
 
-    Your job is to populate the structured model. Follow these rules for specific fields:
+    CRITICAL: Maintain Pydantic schema integrity for Age/Gender fields. Do not modify defaults unless raw text dictates.
 
-    - **skills**: Extract a list of specific technologies (e.g., "Python", "AWS"). Ignore generic terms like "Hard worker".
-    - **experience**: Look for keywords like "Junior" (1-3 yrs), "Senior" (5+ yrs), or explicit years.
-    - **budget**: Look for "$/hr" or annual salary. If annual, convert to approx hourly (Salary / 2000). 
-    - **location**: Detect "Remote", "Hybrid", or specific cities.
-    - **domain**: Infer the industry based on the company description or project details.
-    
-    **EXCEPTION HANDLING:**
-    - If a field is missing in the text, rely on the Pydantic model's default values (e.g. for gender/age).
-    - If the text says "Entry Level" but no budget is given, infer a "Market Standard" budget note in the budget field rather than "None".
-  
   expected_output: >
-    A fully populated RecuirementExtracter object with no missing required fields.
+    A JSON-formatted object matching the RecuirementExtracter schema. Ensure no trailing commas.
   agent: RecurimentExtracter
+
+DBcandidate_search_task:
+  description: >
+    1. Receive extracted fields: skills, location, and budget.
+    2. Execute `dbsearch` tool.
+    3. Filter out any candidate where Rate > budget.
+    4. If results < 5, output "THRESHOLD_NOT_MET" followed by the results found.
+  expected_output: >
+    A list of candidates or the trigger string "THRESHOLD_NOT_MET".
+  agent: DBcandidateSearch
 
 candidate_finding_task:
   description: >
-    Take the structured requirements (RecuirementExtracter object) from the previous task.
-    
-    1. **Strategy:**
-       - Use `skills` and `location` to form your search query.
-       - Use `budget` as a filter. If the candidate's rate is higher than the budget, discard them.
-    
-    2. **Execution:**
-       - Run `dbsearch` first with the top 2 skills.
-       - If < 5 results, run `customSearch` on LinkedIn.
-       - SAVE any new good matches using `candidateSaver`.
-       
-    3. **Ranking:**
-       - Prioritize candidates who match the 'experience' level.
-       - If 'domain' was extracted (e.g., Fintech), prioritize candidates with that specific background.
-  
+    This task only executes if the internal database results were insufficient.
+    1. Search LinkedIn/Google for candidates with skills in location using `customSearch` tool.
+    2. Filter strictly by budget.
+    3. Assign `match_score` (0-10) to results based on how well their bio fits the user's description.
   expected_output: >
-    A list of 10 candidates. Each entry must contain: Name, Profile Link, Matches Skills (Yes/No), and Estimated Rate.
+    A list of 10 external candidates in JSON format.
   agent: CandidateFinder
+
+candidate_saving_task:
+  description: >
+    Review the candidates found in the previous search steps.
+    
+    CRITICAL INSTRUCTIONS:
+    1. Consolidate **ALL** identified candidates into a single JSON list. 
+    2. Pass this ENTIRE list to the `Candidate Saver Tool` in ONE single function call.
+    3. **DO NOT** call the tool multiple times. Call it ONCE with the full list.
+    4. Verify that you have sent at least 5-10 candidates in that single payload.
+    
+  expected_output: >
+    The exact string returned by the `Candidate Saver Tool`.
+  agent: CandidateSaver

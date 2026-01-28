@@ -33,9 +33,9 @@ class DBsearchTool(BaseTool):
                 print("Could not connect to database!!")
 
             with conn.cursor(cursor_factory=RealDictCursor) as cur:
-                query = f"SELECT name, bio, profile_link FROM candidates WHERE %s = ANY(skills);"
+                query = f"SELECT name, bio, profile_link FROM candidate WHERE skills && %s;"
 
-                cur.execute(query,(skill_query))
+                cur.execute(query,(skill_query,))
 
                 candidate_list = cur.fetchall()
 
@@ -59,3 +59,8 @@ class DBsearchTool(BaseTool):
                 conn.close()
         
 
+def checkDBRes(output):
+    if "NOT_FOUND" not in output.raw:
+        print("---- Data found in Database. Exit crew early")
+
+    return output 
