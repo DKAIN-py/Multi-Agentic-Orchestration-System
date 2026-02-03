@@ -15,10 +15,6 @@ DB_PARAMS = {
 }
 
 class DBSaverToolInput(BaseModel):
-    # name: str = Field(..., description="Full name of the candidate.")
-    # link: str = Field(..., description="URL to their LinkedIn profile.")
-    # bio: str = Field(..., description="Summary of their profile.")
-    # skills: str = Field(..., description="Comma-separated list of skills, e.g., 'Python,Django'.")
     candidateList: Union[str ,List[Dict[str, Any]], Dict[str, Any]] = Field(..., description="A candidate list representing a LIST of candidates objects or a json string.")
 
 class CandidateSaverTool(BaseTool):

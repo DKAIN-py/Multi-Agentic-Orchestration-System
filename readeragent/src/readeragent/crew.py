@@ -1,9 +1,23 @@
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
-from pymodels.descriptionModel import DescriptionExtracter
+from tools.UniversalParserTool import UniversalParserTool
+from tools.QuesAnswTool import QuesAnswTool
+from tools.ListFilesTool import ListFilesTool
+import os
 
+
+universal_parser = UniversalParserTool()
+ques_ans = QuesAnswTool()
+list_files = ListFilesTool()
+
+
+local_llm = LLM(
+    model=os.getenv("OPENAI_MODEL_NAME"),
+    base_url=os.getenv("OPENAI_API_BASE"),
+    temperature=0.0
+)
 
 @CrewBase
 class Readeragent():
@@ -12,21 +26,56 @@ class Readeragent():
     tasks: List[Task]
 
     @agent
-    def description_extracter(self) -> Agent:
+    def knowledge_manager(self) -> Agent:
         return Agent(
-            config=self.agents_config['description_extracter'],
+            config=self.agents_config['knowledge_manager'],
+            llm=local_llm,
+            tools=[universal_parser],
             max_rpm=5,
             max_iter=3,
             verbose=True
         )
 
-    
+    @agent
+    def search_planner(self) -> Agent:
+        return Agent(
+            config=self.agents_config['search_planner'],
+            llm=local_llm,
+            tools=[list_files],
+            max_rpm=5,
+            max_iter=3,
+            verbose=True
+        )
+
+    @agent
+    def data_analyst(self) -> Agent:
+        return Agent(
+            config=self.agents_config['data_analyst'],
+            llm=local_llm,
+            tools=[ques_ans],
+            max_rpm=5,
+            max_iter=3,
+            verbose=True
+        )
 
     @task
-    def description_task(self) -> Task:
+    def ingestion_task(self) -> Task:
         return Task(
-            config=self.tasks_config['description_task'],
-            output_pydantic=DescriptionExtracter
+            config=self.tasks_config['ingestion_task'],
+        )
+
+    @task
+    def search_planning_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['search_planning_task'],
+            context=[self.ingestion_task()]
+        )
+
+    @task
+    def qa_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['qa_task'],
+            context=[self.search_planning_task()]
         )
 
     @crew

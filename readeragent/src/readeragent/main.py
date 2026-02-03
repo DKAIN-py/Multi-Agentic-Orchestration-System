@@ -17,7 +17,8 @@ def run():
     custom_input = input("Enter what message u want to do: ")
 
     inputs = {
-        'input_text': custom_input,
+        'query': custom_input,
+        'filenames' : ['BTech_2nd_year_core_Syllabus.pdf','sem1_examfee.pdf'],
         'current_year': str(datetime.now().year)
     }
 
