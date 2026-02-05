@@ -21,7 +21,7 @@ local_llm = LLM(
 
 
 @CrewBase
-class Recruitingagent():
+class Recruitingagent:
     """Recruitingagent crew"""
 
     agents: List[BaseAgent]
