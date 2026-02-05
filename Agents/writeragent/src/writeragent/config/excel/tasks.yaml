@@ -1,9 +1,0 @@
-excel_task:
-  description: >
-    Analyze the request: "{raw_data}".
-    1. Extract the data into a pure CSV string.
-    2. **CRITICAL:** Call the `Excel File Writing Tool` with `filename` ending in **.xlsx**.
-       - Do NOT use .csv unless explicitly asked.
-       - The tool will handle the conversion from CSV string to Excel binary.
-  expected_output: "Success message."
-  agent: excel_specialist
