@@ -1,0 +1,44 @@
+ingestion_task:
+  description: >
+    The user has provided the following files: {filenames}.
+    
+    Your task is to ingest ALL of them into the system:
+    1. Call the `Universal Parser Tool` with the list of filenames "{filenames}".
+    2. The tool will return a report for each file.
+    3. Verify that all files were processed. If any failed, report the error.
+  expected_output: >
+    A summary report confirming which files were successfully indexed and which failed.
+  agent: knowledge_manager
+  
+
+search_planning_task:
+  description: >
+    The user wants: "{query}".
+    
+    **YOUR MISSION:**
+    1. Call `List Files Tool` to view the actual filenames.
+    2. Create a "Search Manifest" mapping specific questions to specific filenames.
+    
+    **REQUIRED OUTPUT FORMAT:**
+    Return a LIST of targets in this exact format:
+    - Target 1: Filename="<exact_name>", Query="<specific_question>"
+    - Target 2: Filename="<exact_name>", Query="<specific_question>"
+  expected_output: >
+    A structured list of file-to-query mappings (The Search Manifest).
+  agent: search_planner
+
+
+qa_task:
+  description: >
+    You have the Search Manifest from the `planning_task`.
+    
+    **YOUR MISSION:**
+    1. Construct a single batch request for the `Question Answer Tool` based on the Manifest.
+    2. Call the tool.
+    3. Synthesize the returned text into a final answer.
+    
+    Do not change the filenames provided by the Planner.
+  expected_output: >
+    A final, comprehensive answer citing the specific data found.
+  agent: data_analyst
+  
