@@ -11,3 +11,9 @@ wheels/
 
 #
 .vscode
+
+# extra dirs
+AgentArch
+Agents/localfiles
+Agents/qdrant_db
+Agents/writtenFiles
