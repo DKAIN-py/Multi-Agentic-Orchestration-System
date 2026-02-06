@@ -1,6 +1,6 @@
 extracting:
   description: >
-    Analyze the following input text: "{input_text}".
+    Analyze the following input text: "{content}".
     
     You need to extract:
     1. **The Target List:** A list of names (e.g., ['John', 'Jane']) OR a Group Flag (e.g., 'ALL_CLIENTS', 'ALL_EMPLOYEES').
@@ -27,7 +27,7 @@ contact_info:
 
 content_gen_task:
   description: >
-    Draft the message content based on "{input_text}".
+    Draft the message content based on "{content}".
     
     1. If the recipient list contains only one person, address them by Name.
     2. **If the recipient list contains multiple people**, use a generic but polite greeting (e.g., "Hello," or "Hi Team,").

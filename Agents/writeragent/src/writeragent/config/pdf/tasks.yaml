@@ -1,7 +1,7 @@
 # --- PDF TASK ---
 pdf_task:
   description: >
-    Analyze the following request: "{raw_data}".
+    Analyze the following request: "{data}".
     
     1. Organize the information into a Report structure (Title, Executive Summary, Key Data).
     2. Format any list or data into a Markdown Table.

@@ -1,7 +1,13 @@
-from crewai.flow.flow import Flow, listen, start
+# Crewai imports
 from crews import PdfCrew, ExcelCrew, DocxCrew, TextCrew
+from crewai.flow.flow import Flow, listen, start
 from crewai import Agent, Task, Crew
 
+#Monitoring
+from agentops import agent as ao_agent
+
+
+@ao_agent(name="Writer Agent")
 class FileGenerationFlow(Flow):
     
     @start()
@@ -20,7 +26,7 @@ class FileGenerationFlow(Flow):
             description=f"""
             Analyze this input: 
             ---
-            {self.state['raw_data']}
+            {self.state['data']}
             ---
             
             **YOUR STRICT INSTRUCTIONS:**
@@ -48,23 +54,23 @@ class FileGenerationFlow(Flow):
     @listen(route_request)
     def execute_specialist(self, decision):
         """Phase 2: The Execution"""
-        user_input = self.state['raw_data']
+        user_input = self.state['data']
         
         if "excel" in decision or "csv" in decision:
             print("Starting Excel Crew...")
-            return ExcelCrew().crew().kickoff(inputs={"raw_data": user_input})
+            return ExcelCrew().crew().kickoff(inputs={"data": user_input})
             
         elif "docx" in decision:
             print("Starting Docx Crew...")
-            return DocxCrew().crew().kickoff(inputs={"raw_data": user_input})
+            return DocxCrew().crew().kickoff(inputs={"data": user_input})
         
         elif "text" in decision or "markdown" in decision:
             print("Starting Text crew...")
-            return TextCrew().crew().kickoff(inputs={"raw_data": user_input})
+            return TextCrew().crew().kickoff(inputs={"data": user_input})
 
         elif "pdf" in decision:
             print("Starting PDF Crew...")
-            return PdfCrew().crew().kickoff(inputs={"raw_data": user_input})
+            return PdfCrew().crew().kickoff(inputs={"data": user_input})
         
         else:
             return "File type requested is not supported.\n"

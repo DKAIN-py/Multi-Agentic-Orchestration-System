@@ -1,12 +1,22 @@
-from crewai import Agent, Crew, Process, Task, LLM
-from crewai.project import CrewBase, agent, crew, task
+# Crewai imports
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from typing import List
+from crewai.project import CrewBase, agent, crew, task
+from crewai import Agent, Crew, Process, Task, LLM
+
+# Pydantic models
 from pymodels.recuirementExtracter import RecuirementExtracter
 from pymodels.webSearchOutput import CandidateList
-from tools.DBSaverTool import CandidateSaverTool
-from tools.searchTools.DBsearchTool import DBsearchTool, checkDBRes
+
+# Task Tools
 from tools.searchTools.WebsearchTool import WebSearchTool, search_web
+from tools.searchTools.DBsearchTool import DBsearchTool, checkDBRes
+from tools.DBSaverTool import CandidateSaverTool
+
+# Monitoring
+from agentops.sdk.decorators import agent as ao_agent, task as ao_task
+
+# utils
+from typing import List
 import os
 
 customSearch = WebSearchTool()
@@ -19,7 +29,7 @@ local_llm = LLM(
     temperature=0.0
 )
 
-
+@ao_agent(name="Recruting Agent")
 @CrewBase
 class Recruitingagent:
     """Recruitingagent crew"""
@@ -67,6 +77,7 @@ class Recruitingagent:
             verbose=True
         )
 
+    @ao_task(name="Conditions extracting")
     @task
     def RecurimentExtracter_task(self) -> Task:
         return Task(
@@ -74,6 +85,7 @@ class Recruitingagent:
             output_pydantic=RecuirementExtracter
         )
 
+    @ao_task(name="Database searching for candidate")
     @task 
     def DBcandidate_search_task(self) -> Task:
         return Task(
@@ -82,9 +94,7 @@ class Recruitingagent:
             callback=checkDBRes
         )
 
-
-
-
+    @ao_task(name="Searching for candidates online")
     @task
     def candidate_finding_task(self) -> Task:
         return Task(
@@ -94,6 +104,7 @@ class Recruitingagent:
             output_pydantic=CandidateList
         )
 
+    @ao_task(name="Saving found candidates to Database")
     @task
     def candidate_saving_task(self) -> Task:
         return Task(

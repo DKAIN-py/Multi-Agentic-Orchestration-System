@@ -1,10 +1,19 @@
-from crewai import Agent, Crew, Process, Task, LLM
+# Crewai imports
 from crewai.project import CrewBase, agent, crew, task
-from tools.DOCXFileTool import DOCXFileWritingTool
+from crewai import Agent, Crew, Process, Task, LLM
+
+# Task Tools
 from tools.ExcelFileTool import ExcelFileWritingTool
-from tools.PDFFileTool import PDFFileWritingTool
+from tools.DOCXFileTool import DOCXFileWritingTool
 from tools.TextFileTool import TextFileWritingTool
+from tools.PDFFileTool import PDFFileWritingTool
+
+# Monitoring
+from agentops import taks as ao_task
+
+# utils
 import os
+
 
 local_llm = LLM(
     model=os.getenv("OPENAI_MODEL_NAME"),
@@ -12,6 +21,7 @@ local_llm = LLM(
     temperature=0.0
 )
 
+@ao_task(name="Text file creation")
 @CrewBase
 class TextCrew:
     agents_config = 'config/text/agents.yaml'
@@ -42,8 +52,8 @@ class TextCrew:
             process=Process.sequential,
             verbose=True 
         )
-    
-# --- SQUAD 1: THE PDF TEAM ---
+
+@ao_task(name="PDF file creation")    
 @CrewBase
 class PdfCrew:
     """PDF Generation Crew"""
@@ -74,7 +84,7 @@ class PdfCrew:
             verbose=True
         )
 
-# --- SQUAD 2: THE EXCEL TEAM ---
+@ao_task(name="Excel file creation")
 @CrewBase
 class ExcelCrew:
     """Excel Data Extraction Crew"""
@@ -105,7 +115,7 @@ class ExcelCrew:
             verbose=True
         )
 
-# --- SQUAD 3: THE DOCX TEAM ---
+@ao_task(name="Docx file creation")
 @CrewBase
 class DocxCrew:
     """Word Document Crew"""

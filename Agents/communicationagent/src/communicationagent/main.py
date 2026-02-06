@@ -1,101 +1,101 @@
-#!/usr/bin/env python
+# #!/usr/bin/env python
 
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+# from dotenv import load_dotenv, find_dotenv
+# load_dotenv(find_dotenv())
 
-import sys
-import warnings
+# import sys
+# import warnings
 
-from datetime import datetime
+# from datetime import datetime
 
-from crew import Communicationagent
+# from crew import Communicationagent
 
-warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
+# warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-# This main file is intended to be a way for you to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
+# # This main file is intended to be a way for you to run your
+# # crew locally, so refrain from adding unnecessary logic into this file.
+# # Replace with inputs you want to test with, it will automatically
+# # interpolate any tasks and agents information
 
-def run():
-    """
-    Run the crew.
-    """
-    custom_input = input("Enter what message u want to do: ")
-
-    inputs = {
-        'input_text': custom_input,
-        'current_year': str(datetime.now().year)
-    }
-
-    try:
-        Communicationagent().crew().kickoff(inputs=inputs)
-    except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
-
-
-run()
-# def train():
+# def run():
 #     """
-#     Train the crew for a given number of iterations.
+#     Run the crew.
 #     """
+#     custom_input = input("Enter what message u want to do: ")
+
 #     inputs = {
-#         "topic": "AI LLMs",
+#         'input_text': custom_input,
 #         'current_year': str(datetime.now().year)
 #     }
-#     try:
-#         Communicationagent().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
+#     try:
+#         Communicationagent().crew().kickoff(inputs=inputs)
 #     except Exception as e:
-#         raise Exception(f"An error occurred while training the crew: {e}")
+#         raise Exception(f"An error occurred while running the crew: {e}")
 
-# def replay():
-#     """
-#     Replay the crew execution from a specific task.
-#     """
-#     try:
-#         Communicationagent().crew().replay(task_id=sys.argv[1])
 
-#     except Exception as e:
-#         raise Exception(f"An error occurred while replaying the crew: {e}")
+# run()
+# # def train():
+# #     """
+# #     Train the crew for a given number of iterations.
+# #     """
+# #     inputs = {
+# #         "topic": "AI LLMs",
+# #         'current_year': str(datetime.now().year)
+# #     }
+# #     try:
+# #         Communicationagent().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
-# def test():
-#     """
-#     Test the crew execution and returns the results.
-#     """
-#     inputs = {
-#         "topic": "AI LLMs",
-#         "current_year": str(datetime.now().year)
-#     }
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while training the crew: {e}")
 
-#     try:
-#         Communicationagent().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
+# # def replay():
+# #     """
+# #     Replay the crew execution from a specific task.
+# #     """
+# #     try:
+# #         Communicationagent().crew().replay(task_id=sys.argv[1])
 
-#     except Exception as e:
-#         raise Exception(f"An error occurred while testing the crew: {e}")
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while replaying the crew: {e}")
 
-# def run_with_trigger():
-#     """
-#     Run the crew with trigger payload.
-#     """
-#     import json
+# # def test():
+# #     """
+# #     Test the crew execution and returns the results.
+# #     """
+# #     inputs = {
+# #         "topic": "AI LLMs",
+# #         "current_year": str(datetime.now().year)
+# #     }
 
-#     if len(sys.argv) < 2:
-#         raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
+# #     try:
+# #         Communicationagent().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
 
-#     try:
-#         trigger_payload = json.loads(sys.argv[1])
-#     except json.JSONDecodeError:
-#         raise Exception("Invalid JSON payload provided as argument")
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while testing the crew: {e}")
 
-#     inputs = {
-#         "crewai_trigger_payload": trigger_payload,
-#         "topic": "",
-#         "current_year": ""
-#     }
+# # def run_with_trigger():
+# #     """
+# #     Run the crew with trigger payload.
+# #     """
+# #     import json
 
-#     try:
-#         result = Communicationagent().crew().kickoff(inputs=inputs)
-#         return result
-#     except Exception as e:
-#         raise Exception(f"An error occurred while running the crew with trigger: {e}")
+# #     if len(sys.argv) < 2:
+# #         raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
+
+# #     try:
+# #         trigger_payload = json.loads(sys.argv[1])
+# #     except json.JSONDecodeError:
+# #         raise Exception("Invalid JSON payload provided as argument")
+
+# #     inputs = {
+# #         "crewai_trigger_payload": trigger_payload,
+# #         "topic": "",
+# #         "current_year": ""
+# #     }
+
+# #     try:
+# #         result = Communicationagent().crew().kickoff(inputs=inputs)
+# #         return result
+# #     except Exception as e:
+# #         raise Exception(f"An error occurred while running the crew with trigger: {e}")

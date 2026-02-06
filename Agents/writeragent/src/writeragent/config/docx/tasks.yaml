@@ -1,6 +1,6 @@
 docx_task:
   description: >
-    Analyze the following request: "{raw_data}".
+    Analyze the following request: "{data}".
     
     1. Draft a professional document based on the input.
     2. Ensure proper hierarchy using `#` and `##`.

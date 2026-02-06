@@ -1,6 +1,6 @@
 excel_task:
   description: >
-    Analyze the request: "{raw_data}".
+    Analyze the request: "{data}".
     1. Extract the data into a pure CSV string.
     2. **CRITICAL:** Call the `Excel File Writing Tool` with `filename` ending in **.xlsx**.
        - Do NOT use .csv unless explicitly asked.

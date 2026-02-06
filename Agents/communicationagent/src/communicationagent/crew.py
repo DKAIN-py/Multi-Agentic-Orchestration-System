@@ -1,13 +1,24 @@
-from crewai import Agent, Crew, Process, Task, LLM
-from crewai.project import CrewBase, agent, crew, task
+# Crewai imports
 from crewai.agents.agent_builder.base_agent import BaseAgent
-import os
-from typing import List
-from tools.dbSearch import dbSearchTool
-from tools.emailTool import SendEmailTool
-from tools.whatsappTool import SendWhatsAppTool
-from tools.reviewTool import ReviewTool
+from crewai.project import CrewBase, agent, crew, task
+from crewai import Agent, Crew, Process, Task, LLM
+
+# Pydantic models
 from pyModels.extracter import InfoExtracter
+
+# Task Tools
+from tools.whatsappTool import SendWhatsAppTool
+from tools.emailTool import SendEmailTool
+from tools.reviewTool import ReviewTool
+from tools.dbSearch import dbSearchTool
+
+# Monitoring
+from agentops.sdk.decorators import agent as ao_agent, task as ao_task
+
+# utils
+from typing import List
+import os
+
 
 dbsearch = dbSearchTool()
 sendEmail = SendEmailTool()
@@ -20,6 +31,7 @@ local_llm = LLM(
     temperature=0.0
 )
 
+@ao_agent(name="Communication Agent")
 @CrewBase
 class Communicationagent():
     """Communicationagent crew"""
@@ -80,7 +92,7 @@ class Communicationagent():
             llm=local_llm
         )
 
-
+    @ao_task(name="Fields extracting")
     @task
     def extracting_task(self) -> Task:
         return Task(
@@ -88,14 +100,16 @@ class Communicationagent():
             output_pydantic=InfoExtracter
         )
 
+    @ao_task(name="Retriving contact information from DB")
     @task
     def contact_info_task(self) -> Task :
         return Task(
             config=self.tasks_config['contact_info'],
-            expected_output="Name,email and ohone only",
+            expected_output="Name,email and phone only",
             context=[self.extracting_task()]
         )
     
+    @ao_task(name="Generating message/email to send")
     @task
     def content_gen_task(self) -> Task :
         return Task(
@@ -103,6 +117,7 @@ class Communicationagent():
             context=[self.extracting_task(), self.contact_info_task()]
         )
     
+    @ao_task(name="Verifying Content before sending(HITL)")
     @task
     def content_verifi_task(self) -> Task:
         return Task(
@@ -111,6 +126,7 @@ class Communicationagent():
             human_input=True
         )
 
+    @ao_task(name="Sending Ouptut") 
     @task
     def sending_output(self) -> Task:
         return Task(

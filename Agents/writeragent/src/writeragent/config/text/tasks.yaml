@@ -1,6 +1,6 @@
 text_task:
   description: >
-    Analyze the following request: "{raw_data}".
+    Analyze the following request: "{data}".
     
     1. Determine if the user wants a plain text file (`.txt`) or a Markdown file (`.md`).
     2. Write the content clearly.
