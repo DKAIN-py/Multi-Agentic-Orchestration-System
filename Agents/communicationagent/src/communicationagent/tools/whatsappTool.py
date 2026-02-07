@@ -1,13 +1,24 @@
+# Crewai imports
 from crewai.tools import BaseTool
+
+# Twilio tools
+from twilio.rest import Client
+
+# Monitoring
+from agentops.sdk.decorators import tool as ao_tool
+
+# utils
 from pydantic import BaseModel, Field
 from typing import Type
-from twilio.rest import Client
 import os
+
+
 
 class WhatsAppInput(BaseModel):
     phone: str = Field(..., description="Phone number to send to (must include country code, e.g., +1555...)")
     message: str = Field(..., description="The text message to send")
 
+@ao_tool(name="Whatsapp message")
 class SendWhatsAppTool(BaseTool):
     name: str = "WhatsApp Sender"
     description: str = "Sends a WhatsApp message via Twilio."

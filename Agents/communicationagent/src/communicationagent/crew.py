@@ -135,9 +135,9 @@ class Communicationagent():
         )
 
     @crew
-    def crew(self) -> Crew:
+    async def crew(self) -> Crew:
 
-        return Crew(
+        return await Crew(
             agents=self.agents, 
             tasks=self.tasks, 
             process=Process.sequential,

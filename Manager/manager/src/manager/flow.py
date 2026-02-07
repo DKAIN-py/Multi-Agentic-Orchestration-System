@@ -12,6 +12,7 @@ from agentops import TraceState
 import agentops
 
 # utils
+from IO import AgentInput, AgentOutput
 import os
 
 
@@ -21,26 +22,31 @@ agentops.init(
 )
 
 class ManagerState(BaseModel):
-    user_prompt: str = Field(...,description="Prompt given by the user")
+    request: AgentInput = Field(...,description="Full input packet given by server")
     plan: List[Dict[str,str]] = Field(..., description="List of Key value pair of agent and task, where key is agent and value is task for a specific user query.")
     current_step_idx: int = Field(default=0, description="Index of task currently being exceuted.")
-    last_output: str = Field(default="", description="Output of a agent after its task exceution finised, to be passed to next agent.")
+    exceution_history: List[str] = Field(default=[], description="Accumulated results from the agents")
     trace_context: agentops.start_trace = Field(default=Any, description="Used to track each session of Manager and System")
 
 
 class Manager(Flow[ManagerState]):
 
     @start
-    async def initialize(self, query):
+    async def initialize(self, payload: AgentInput):
+        print(f"Task started for {payload.task_id}")
+        self.state.request = payload
+
         self.state.trace_context = agentops.start_trace(
-            api_key=os.getenv('AGENT_OPS_API_KEY'), 
-            skip_auto_end_session=True,
-            name=f"Kins-Manager-{self.state.id}",
-            tags=["production","multi-user"]
+            name=f"Kins-Manager-{payload.session_id}",
+            tags=["production", payload.user_id]
         )
 
-        query = self.state.user_prompt
-        self.state.plan = await PlannerAgent.PlannerTask(query)
+        planner_prompt = payload.content
+        if payload.files:
+            file_desc = ",".join([f"Path: {f.path}, Description: {f.description}" for f in payload.files])
+            planner_prompt += f"\n(User has attached: {file_desc})"
+        
+        self.state.plan = await PlannerAgent.PlannerTask(planner_prompt)
         
     @router(initialize, "process_next_step")
     def control_struct(self):
@@ -69,7 +75,19 @@ class Manager(Flow[ManagerState]):
 
         selected_crew = crew_collection[current_crew]
 
-        curr_input = f"Context: {self.state.last_output}\nTask: {current_subquery}" # ALL INPUT AND OUTPUT SHOULD BE OF THIS ORDER
+        context_str = "\n".join(self.state.exceution_history)
+
+        file_str =""
+        if self.state.request.files:
+            file_str = "\nAVAILABLE FILES:\n" + "\n".join(
+                [f"- {f.path} ({f.description})" for f in self.state.request.files]
+            )
+
+        curr_input = (
+            f"**OBJECTIVE** : {current_subquery}\n\n"
+            f"**CONTEXT FROM PREVIOUS STEPS: {context_str}\n\n**"
+            f"{file_str}"
+        )
         
         try:
             if isinstance(selected_crew, Crew):
@@ -77,9 +95,10 @@ class Manager(Flow[ManagerState]):
             elif isinstance(selected_crew, Flow):
                 result = await selected_crew.akickoff(input={"data" : curr_input})
 
-            self.state.trace_context.span.set_attribute("current_crew", current_crew)
-            
-            self.state.last_output = str(result)
+            output = str(result)
+
+            self.state.trace_context.span.set_attribute(f"step_{self.state.current_step_idx}_output", output)
+            self.state.exceution_history.append(f"Result From: {current_crew}: {output}")
             self.state.current_step_idx += 1
 
             return "process_next_step"
@@ -91,5 +110,16 @@ class Manager(Flow[ManagerState]):
 @listen("Complete")
 def finalize(self):
     agentops.end_trace(self.state.trac_context, end_state=TraceState.SUCCESS)
+
+    final_content = self.state.exceution_history[-1] if self.state.exceution_history else "No output generated"
+
+    return AgentOutput(
+        status="Success",
+        content=final_content,
+        metadata={
+            "steps exceuted":self.state.current_step_idx,
+            "plan":self.state.plan 
+        }
+    )
         
     

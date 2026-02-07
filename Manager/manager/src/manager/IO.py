@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
 class AgentFile(BaseModel):
@@ -7,9 +7,10 @@ class AgentFile(BaseModel):
     description: Optional[str] = None 
     
 class AgentInput(BaseModel):
-    user_id: str          
-    session_id: str       
-    task_id: str         
+
+    user_id: str = "default_user"         
+    session_id: str = "testing_session"      
+    task_id: str = "testing_task"        
     
     content: str          
     
