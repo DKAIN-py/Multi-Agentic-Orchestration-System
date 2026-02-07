@@ -2,8 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
 class AgentFile(BaseModel):
-    path: str
-    file_type: str  
+    path: str  
     description: Optional[str] = None 
     
 class AgentInput(BaseModel):
