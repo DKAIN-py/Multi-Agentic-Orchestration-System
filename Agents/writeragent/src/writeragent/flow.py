@@ -1,5 +1,5 @@
 # Crewai imports
-from crews import PdfCrew, ExcelCrew, DocxCrew, TextCrew
+from .crews import PdfCrew, ExcelCrew, DocxCrew, TextCrew
 from crewai.flow.flow import Flow, listen, start
 from crewai import Agent, Task, Crew
 
@@ -11,7 +11,7 @@ from agentops import agent as ao_agent
 class FileGenerationFlow(Flow):
     
     @start()
-    def route_request(self):
+    async def route_request(self):
         print("Analyzing Request...")
         
         router = Agent(
@@ -46,31 +46,31 @@ class FileGenerationFlow(Flow):
         )
         
         crew = Crew(agents=[router], tasks=[task])
-        decision = crew.kickoff().raw.strip().lower()
+        decision = await crew.akickoff().raw.strip().lower()
         
         print(f"Decision: {decision}")
         return decision
 
     @listen(route_request)
-    def execute_specialist(self, decision):
+    async def execute_specialist(self, decision):
         """Phase 2: The Execution"""
         user_input = self.state['data']
         
         if "excel" in decision or "csv" in decision:
             print("Starting Excel Crew...")
-            return ExcelCrew().crew().kickoff(inputs={"data": user_input})
+            return await ExcelCrew().crew().kickoff(inputs={"data": user_input})
             
         elif "docx" in decision:
             print("Starting Docx Crew...")
-            return DocxCrew().crew().kickoff(inputs={"data": user_input})
+            return await DocxCrew().crew().kickoff(inputs={"data": user_input})
         
         elif "text" in decision or "markdown" in decision:
             print("Starting Text crew...")
-            return TextCrew().crew().kickoff(inputs={"data": user_input})
+            return await TextCrew().crew().kickoff(inputs={"data": user_input})
 
         elif "pdf" in decision:
             print("Starting PDF Crew...")
-            return PdfCrew().crew().kickoff(inputs={"data": user_input})
+            return await PdfCrew().crew().kickoff(inputs={"data": user_input})
         
         else:
             return "File type requested is not supported.\n"

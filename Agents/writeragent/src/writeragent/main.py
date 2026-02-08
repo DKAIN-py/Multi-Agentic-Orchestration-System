@@ -3,7 +3,7 @@ load_dotenv(find_dotenv())
 
 import warnings
 
-from flow import FileGenerationFlow
+from .flow import FileGenerationFlow
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 

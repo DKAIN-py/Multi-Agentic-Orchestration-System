@@ -4,11 +4,13 @@ from pydantic import BaseModel, Field
 import json
 from googleapiclient.discovery import build
 import os 
+from agentops.sdk.decorators import tool as ao_tool
 
 
 class WebSearchToolInput(BaseModel):
     search_query: str = Field(...,description="query to search for")
 
+@ao_tool(name="Web searching for candidates")
 class WebSearchTool(BaseTool):
     name: str = "Google Custom Search Tool"
     description: str = (

@@ -3,10 +3,14 @@ from crewai.tools import BaseTool
 import os 
 from pydantic import BaseModel
 
+from agentops.sdk.decorators import tool as ao_tool
+
+
+
 class ListFileInput(BaseModel):
     pass
 
-
+@ao_tool(name="File listing tool")
 class ListFilesTool(BaseTool):
     name: str = "List Files Tool"
     description: str = "Used to list all the avialable files for searching and quering"

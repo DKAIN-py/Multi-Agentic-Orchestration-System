@@ -4,13 +4,13 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai import Agent, Crew, Process, Task, LLM
 
 # Pydantic models
-from pyModels.extracter import InfoExtracter
+from .pyModels.extracter import InfoExtracter
 
 # Task Tools
-from tools.whatsappTool import SendWhatsAppTool
-from tools.emailTool import SendEmailTool
-from tools.reviewTool import ReviewTool
-from tools.dbSearch import dbSearchTool
+from .tools.whatsappTool import SendWhatsAppTool
+from .tools.emailTool import SendEmailTool
+from .tools.reviewTool import ReviewTool
+from .tools.dbSearch import dbSearchTool
 
 # Monitoring
 from agentops.sdk.decorators import agent as ao_agent, task as ao_task
@@ -19,11 +19,6 @@ from agentops.sdk.decorators import agent as ao_agent, task as ao_task
 from typing import List
 import os
 
-
-dbsearch = dbSearchTool()
-sendEmail = SendEmailTool()
-sendwhatsapp = SendWhatsAppTool()
-reviewSignal = ReviewTool()
 
 local_llm = LLM(
     model=os.getenv("OPENAI_MODEL_NAME"),
@@ -39,6 +34,7 @@ class Communicationagent():
     agents: List[BaseAgent]
     tasks: List[Task]
 
+
     @agent
     def info_extracter(self) -> Agent:
         return Agent(
@@ -53,7 +49,7 @@ class Communicationagent():
     def contact_info(self) -> Agent:
         return Agent(
             config=self.agents_config['contact_info'],
-            tools=[dbsearch],
+            tools=[dbSearchTool()],
             max_rpm = 5,
             max_iter=3,
             verbose=True,
@@ -74,7 +70,7 @@ class Communicationagent():
     def content_verifi(self) -> Agent:
         return Agent(
             config=self.agents_config['content_verifi'],
-            tools=[reviewSignal],
+            tools=[ReviewTool()],
             max_rpm = 5,
             max_iter=3,
             verbose=True,
@@ -85,7 +81,7 @@ class Communicationagent():
     def send_output(self) -> Agent:
         return Agent(
             config=self.agents_config['send_output'],
-            tools=[sendEmail,sendwhatsapp],
+            tools=[SendEmailTool(),SendWhatsAppTool()],
             max_rpm = 5,
             max_iter=3,
             verbose=True,

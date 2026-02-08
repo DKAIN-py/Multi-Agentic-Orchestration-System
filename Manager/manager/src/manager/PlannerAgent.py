@@ -1,5 +1,6 @@
 from agentops.sdk.decorators import agent as ao_agent, task as ao_task
-from pydantic import BaseModel, Field, List, Dict
+from pydantic import BaseModel, Field
+from typing import List, Dict
 from crewai import Agent, Crew, Task, LLM
 import os
 
@@ -9,18 +10,13 @@ local_llm = LLM(
     temperature=0.0
 )
 
-class PlannerInput(BaseModel):
-    prompt: str = Field(...,description="Query of user to be resolved.")
 
 class PlannerOutput(BaseModel):
     plan: List[Dict[str,str]] = Field(..., description="List of agents's tasks for a specific user query.")
 
-@ao_agent(name="Planner Agent")
-class PlannerAgent:
 
-    @staticmethod
-    def Planner_Agent():
-        Agent(
+def Planner_Agent():
+        return Agent(
             role="Kins System Architect",
             goal="Decompose complex user queries into an optimal sequence of specialized agent tasks.",
             backstory=(
@@ -28,15 +24,15 @@ class PlannerAgent:
                 Your job is to look at a user request and determine which 'departments' (agents)
                 need to be involved. You are highly logical and follow the 'Shortest Path' principle."""
             ),
+            llm=local_llm,
             max_rpm=5,
             max_iter=3,
             verbose=True,
         )
 
-    @ao_task(name="Planning Task")
-    @classmethod
-    async def PlannerTask(cls, query: str) -> List[Dict[str,str]]:
-        agent = cls.Planner_Agent()
+# @ao_task(name="Planning Task")
+async def PlannerTask(query: str) -> List[Dict[str,str]]:
+        agent = Planner_Agent()
 
         available_agents = ["communication", "reader", "hiring", "writer"]
 
@@ -53,5 +49,5 @@ class PlannerAgent:
             agent=agent
         )
 
-        result = await Crew(agents=[agent], tasks=[task]).akickoff()
+        result = await Crew(agents=[agent], tasks=[task]).kickoff_async()
         return result.pydantic.plan

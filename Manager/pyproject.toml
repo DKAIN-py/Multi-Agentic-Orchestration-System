@@ -1,0 +1,21 @@
+[project]
+name = "manager"
+version = "0.1.0"
+description = "Kins Manager Flow"
+requires-python = ">=3.11"
+dependencies = [
+    "communicationagent",
+    "readeragent",
+    "recruitingagent",
+    "writeragent",
+    "agentops>=0.4.21",
+    "crewai[google-genai,tools]>=1.6.0",
+    "dotenv>=0.9.9",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/manager"]

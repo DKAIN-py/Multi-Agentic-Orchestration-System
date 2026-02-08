@@ -3,13 +3,13 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai import Agent, Crew, Process, Task, LLM
 
 # Task Tools
-from tools.ExcelFileTool import ExcelFileWritingTool
-from tools.DOCXFileTool import DOCXFileWritingTool
-from tools.TextFileTool import TextFileWritingTool
-from tools.PDFFileTool import PDFFileWritingTool
+from .tools.ExcelFileTool import ExcelFileWritingTool
+from .tools.DOCXFileTool import DOCXFileWritingTool
+from .tools.TextFileTool import TextFileWritingTool
+from .tools.PDFFileTool import PDFFileWritingTool
 
 # Monitoring
-from agentops import taks as ao_task
+from agentops import task as ao_task
 
 # utils
 import os

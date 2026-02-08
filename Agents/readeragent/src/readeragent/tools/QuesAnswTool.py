@@ -5,6 +5,9 @@ from qdrant_client import QdrantClient
 import os
 import json
 
+from agentops.sdk.decorators import tool as ao_tool
+
+
 class SearchTarget(BaseModel):
     query: str = Field(...,description="Specific question or request from user")
     filter_filename: Optional[str] = Field(None, description="The specific filename to search in. Leave empty to search all.")
@@ -13,7 +16,7 @@ class SearchTarget(BaseModel):
 class QuesAnswInput(BaseModel):
     targets: List[SearchTarget] = Field(...,description="List of search queries with their related filename")
 
-
+@ao_tool(name="Vector Search(ques/ans tool)")
 class QuesAnswTool(BaseTool):
     name: str = "Question Answer Tool"
     description: str = "Used to retreive potential answers from the vector DB to solve user's query"

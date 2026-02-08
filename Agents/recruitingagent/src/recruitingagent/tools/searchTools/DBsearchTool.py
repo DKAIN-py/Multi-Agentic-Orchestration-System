@@ -4,6 +4,8 @@ from pydantic import BaseModel, Field
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
+from agentops.sdk.decorators import tool as ao_tool
+
 
 # DATABASE CONFIG
 DB_PARAMS = {
@@ -18,6 +20,7 @@ DB_PARAMS = {
 class DBsearchToolInput(BaseModel):
     skill_query: List[str] = Field(..., description="skill query to be exceuted")
 
+@ao_tool(name="DB searching for candidates")
 class DBsearchTool(BaseTool):
     name: str = "Databse searching tool"
     description: str = (

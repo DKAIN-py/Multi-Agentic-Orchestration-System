@@ -5,6 +5,9 @@ import psycopg2
 import os
 import json
 
+from agentops.sdk.decorators import tool as ao_tool
+
+
 # DATABASE CONFIG
 DB_PARAMS = {
     "host" :os.getenv("DB_HOST"), 
@@ -17,6 +20,7 @@ DB_PARAMS = {
 class DBSaverToolInput(BaseModel):
     candidateList: Union[str ,List[Dict[str, Any]], Dict[str, Any]] = Field(..., description="A candidate list representing a LIST of candidates objects or a json string.")
 
+@ao_tool(name="Saving candiates to DB")
 class CandidateSaverTool(BaseTool):
     name: str = "Candidate Saver Tool"
     description: str = (

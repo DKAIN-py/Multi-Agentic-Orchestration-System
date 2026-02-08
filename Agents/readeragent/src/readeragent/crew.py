@@ -4,9 +4,9 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai import Agent, Crew, Process, Task, LLM
 
 # Tasl tools
-from tools.UniversalParserTool import UniversalParserTool
-from tools.ListFilesTool import ListFilesTool
-from tools.QuesAnswTool import QuesAnswTool
+from .tools.UniversalParserTool import UniversalParserTool
+from .tools.ListFilesTool import ListFilesTool
+from .tools.QuesAnswTool import QuesAnswTool
 
 # Monitoring
 from agentops.sdk.decorators import agent as ao_agent, task as ao_task
@@ -16,9 +16,7 @@ from typing import List
 import os
 
 
-universal_parser = UniversalParserTool()
-ques_ans = QuesAnswTool()
-list_files = ListFilesTool()
+
 
 
 local_llm = LLM(
@@ -34,12 +32,13 @@ class Readeragent():
     agents: List[BaseAgent]
     tasks: List[Task]
 
+
     @agent
     def knowledge_manager(self) -> Agent:
         return Agent(
             config=self.agents_config['knowledge_manager'],
             llm=local_llm,
-            tools=[universal_parser],
+            tools=[UniversalParserTool()],
             max_rpm=5,
             max_iter=3,
             verbose=True
@@ -50,7 +49,7 @@ class Readeragent():
         return Agent(
             config=self.agents_config['search_planner'],
             llm=local_llm,
-            tools=[list_files],
+            tools=[ListFilesTool()],
             max_rpm=5,
             max_iter=3,
             verbose=True
@@ -61,7 +60,7 @@ class Readeragent():
         return Agent(
             config=self.agents_config['data_analyst'],
             llm=local_llm,
-            tools=[ques_ans],
+            tools=[QuesAnswTool()],
             max_rpm=5,
             max_iter=3,
             verbose=True

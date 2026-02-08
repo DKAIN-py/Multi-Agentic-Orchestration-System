@@ -3,12 +3,25 @@ from typing import Type
 from pydantic import BaseModel, Field
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import os
+
+from agentops.sdk.decorators import tool as ao_tool
+
+# DATABASE CONFIG
+DB_PARAMS = {
+    "host" :os.getenv("DB_HOST"), 
+    "dbname":os.getenv("DB_NAME"),
+    "user":os.getenv("DB_USER"),
+    "password":os.getenv("DB_PASSWORD"),
+    "port":os.getenv("DB_PORT")
+}
 
 class dbSearchInput(BaseModel):
     """Input schema for dbSearchTool."""
     name: str = Field(..., description="Name of the person to search for")
     typeof: str = Field(..., description="Type of person to search for, Client or Employee.")
 
+@ao_tool(name="DB search Tool")
 class dbSearchTool(BaseTool):
     name: str = "Database Search Tool"
     description: str = (
@@ -21,7 +34,7 @@ class dbSearchTool(BaseTool):
         conn = None
         
         try:
-            conn = psycopg2.connect(host="localhost", dbname="kins",user="postgres",password="post00",port=5432)
+            conn = psycopg2.connect(**DB_PARAMS)
 
             if not conn:
                 print(f"Could not connect to Database!!")

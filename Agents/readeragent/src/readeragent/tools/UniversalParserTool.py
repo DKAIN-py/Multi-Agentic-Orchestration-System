@@ -9,6 +9,8 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharac
 import os
 import uuid
 
+from agentops.sdk.decorators import tool as ao_tool
+
 
 qdrant_path = os.getenv('QDRANT_PATH')
 collection_name = os.getenv('COLLECTION_NAME')
@@ -16,7 +18,7 @@ collection_name = os.getenv('COLLECTION_NAME')
 class UniversalParserInput(BaseModel):
     filenames: List[str] = Field(...,description="A list of names of the files to be parsed")
 
-
+@ao_tool(name="Uni Praser tool")
 class UniversalParserTool(BaseTool):
     name: str = "Universal Parser Tool"
     description: str = "Used to parse all the defined types of files and Extracts inforamtion from the file"

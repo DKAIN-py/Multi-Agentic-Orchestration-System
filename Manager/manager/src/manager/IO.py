@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 
 class AgentFile(BaseModel):
@@ -11,17 +11,17 @@ class AgentInput(BaseModel):
     session_id: str = "testing_session"      
     task_id: str = "testing_task"        
     
-    content: str          
+    content: str  = ""  
     
-    files: List[AgentFile] = []  
+    files: List[AgentFile] = Field(default_factory=list)
     
-    context: Dict[str, Any] = {} 
+    context: Dict[str, Any] = Field(default_factory=dict)
 
 class AgentOutput(BaseModel):
     status: str           
     
     content: str          
     
-    generated_files: List[str] = [] 
+    generated_files: List[str] = Field(default_factory=list)
     
-    metadata: Dict[str, Any] = {}   
+    metadata: Dict[str, Any] = Field(default_factory=dict)

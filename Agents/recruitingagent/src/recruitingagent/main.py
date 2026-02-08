@@ -8,7 +8,7 @@ import warnings
 
 from datetime import datetime
 
-from crew import Recruitingagent
+from .crew import Recruitingagent
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 

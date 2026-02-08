@@ -1,11 +1,14 @@
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 from typing import Type
+from agentops.sdk.decorators import tool as ao_tool
+
 
 class reviewToolInput(BaseModel):
         sending_signal: bool = Field(default=True, description="Set to False if user says 'directly', 'immediately', 'no review', or 'urgent'. Default is True.")
         draft_msg: str = Field(...,description="Last updated message or email")
 
+@ao_tool(name="HITL Tool for communication serivce")
 class ReviewTool(BaseTool):
     name: str = "Asks for human review"
     description: str = (

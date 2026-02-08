@@ -4,13 +4,13 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai import Agent, Crew, Process, Task, LLM
 
 # Pydantic models
-from pymodels.recuirementExtracter import RecuirementExtracter
-from pymodels.webSearchOutput import CandidateList
+from .pymodels.recuirementExtracter import RecuirementExtracter
+from .pymodels.webSearchOutput import CandidateList
 
 # Task Tools
-from tools.searchTools.WebsearchTool import WebSearchTool, search_web
-from tools.searchTools.DBsearchTool import DBsearchTool, checkDBRes
-from tools.DBSaverTool import CandidateSaverTool
+from .tools.searchTools.WebsearchTool import WebSearchTool, search_web
+from .tools.searchTools.DBsearchTool import DBsearchTool, checkDBRes
+from .tools.DBSaverTool import CandidateSaverTool
 
 # Monitoring
 from agentops.sdk.decorators import agent as ao_agent, task as ao_task
@@ -19,9 +19,7 @@ from agentops.sdk.decorators import agent as ao_agent, task as ao_task
 from typing import List
 import os
 
-customSearch = WebSearchTool()
-dbsearch = DBsearchTool()
-candidateSaver = CandidateSaverTool()
+
 
 local_llm = LLM(
     model=os.getenv("OPENAI_MODEL_NAME"),
@@ -37,6 +35,7 @@ class Recruitingagent:
     agents: List[BaseAgent]
     tasks: List[Task]
 
+
     @agent
     def RecurimentExtracter(self) -> Agent:
         return Agent(
@@ -50,7 +49,7 @@ class Recruitingagent:
     def DBcandidateSearch(self) -> Agent:
         return Agent(
             config=self.agents_config['DBcandidateSearch'],
-            tools=[dbsearch],
+            tools=[DBsearchTool()],
             max_iter=10,
             llm=local_llm,
             verbose=True,
@@ -60,7 +59,7 @@ class Recruitingagent:
     def CandidateFinder(self) -> Agent:
         return Agent(
             config=self.agents_config['CandidateFinder'],
-            tools=[customSearch],
+            tools=[WebSearchTool()],
             max_iter=10,
             llm=local_llm,
             verbose=True,
@@ -71,7 +70,7 @@ class Recruitingagent:
     def CandidateSaver(self) -> Agent:
         return Agent(
             config=self.agents_config['CandidateSaver'],
-            tools=[candidateSaver],
+            tools=[CandidateSaverTool()],
             max_iter=10,
             llm=local_llm,
             verbose=True

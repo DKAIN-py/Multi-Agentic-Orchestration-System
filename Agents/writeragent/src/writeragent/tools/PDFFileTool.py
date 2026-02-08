@@ -5,11 +5,14 @@ import os
 import pypandoc
 import markdown
 from weasyprint import HTML, CSS
+from agentops.sdk.decorators import tool as ao_tool
+
 
 class FileWritingInput(BaseModel):
     content: str = Field(...,description="Formatted content to be written in a PDF file")
     filename: str = Field(...,description="A dummy filename created by agent in refrence to the content")
 
+@ao_tool(name="PDF tool")
 class PDFFileWritingTool(BaseTool):
     name: str = "PDF File Writing Tool"
     description: str = "Used to create files from the formatted content sent by user"

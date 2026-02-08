@@ -3,11 +3,14 @@ from pydantic import BaseModel, Field
 from typing import Type
 import os
 import pypandoc
+from agentops.sdk.decorators import tool as ao_tool
+
 
 class FileWritingInput(BaseModel):
     content: str = Field(...,description="Formatted content to be written in a docx file")
     filename: str = Field(...,description="A dummy filename created by agent in refrence to the content")
 
+@ao_tool(name="DOCX Tool")
 class DOCXFileWritingTool(BaseTool):
     name: str = "Docx File Writing Tool"
     description: str = "Used to create files from the formatted content sent by user"
